@@ -223,40 +223,38 @@ async function generateRoomArticle(roomId, roomTitle, articles) {
 }
 
 // ── NARRATIVE PROMPT MAPS ────────────────────────────────────────────
-const NARRATIVE_SYMBOLS = {
-  'security':      'crumbling fortress walls and siege machinery, armored figures as shadows',
-  'humanitarian':  'empty vessels and absent figures, hollow spaces where people should be',
-  'analytical':    'celestial maps and mathematical diagrams being torn apart by unseen forces',
-  'diplomatic':    'two grand halls separated by a vast chasm, hands reaching across',
-  'economic':      'overflowing scales and cascading coins dissolving into smoke',
-  'legal':         'broken marble columns and scattered scrolls, blind justice tilted',
-  'investigative': 'hidden chambers revealed by candlelight, shadows concealing documents',
-  'geopolitical':  'ancient maps redrawn by trembling hands, borders bleeding into each other',
-  'political':     'thrones and crowns fragmenting, power symbols cracking from within',
-  'ideological':   'two opposing forces meeting at a fracture point, neither yielding',
-  'policy':        'architectural blueprints burning at the edges, order dissolving',
-  'factual':       'a mirror reflecting two different realities simultaneously'
+// One strong visual metaphor per narrative type
+// Style: stark graphic, political poster, Saul Bass inspired
+// Rule: one idea, one image, instantly readable
+
+const NARRATIVE_SCENES = {
+  'security':      'a single iron gate casting a long shadow across empty ground, the gate half open, light and darkness in perfect tension',
+  'humanitarian':  'an empty chair at a table set for many, one glass tipped on its side, stillness and absence',
+  'analytical':    'a perfect geometric grid dissolving at one corner, order meeting entropy at a single point',
+  'diplomatic':    'two chairs facing each other across a vast empty floor, neither occupied, the space between them everything',
+  'economic':      'a single scale perfectly balanced, one side holding a stone, the other holding smoke',
+  'legal':         'a tall doorway with no door, light beyond it, a long shadow falling back into darkness',
+  'investigative': 'a spotlight illuminating a single piece of paper on an otherwise empty floor',
+  'geopolitical':  'a horizon line with two suns, casting shadows in opposite directions',
+  'political':     'an empty podium, microphone still vibrating, the crowd implied by their absence',
+  'ideological':   'a single vertical line dividing the frame, left side light, right side dark, a crack running through it',
+  'policy':        'a blueprint pinned to a wall, one corner peeling away to reveal nothing behind it',
+  'factual':       'a magnifying glass over a surface that reflects something different than what it magnifies'
 };
 
-const ROOM_ANCHORS = {
-  'iran-war-2026':    'fire and shadow over ancient Persian architecture',
-  'isr-pal':          'two cities sharing one sky, divided by darkness',
-  'ukraine-russia':   'wheat fields scorched, classical Eastern European architecture in ruins',
-  'us-china':         'Western and Eastern classical architecture facing each other across void',
-  'trump':            'neoclassical courthouse columns crumbling under their own weight',
-  'ai-reg':           'a thinking machine rendered in Renaissance style, circuits as veins',
-  'ai-race':          'mechanical minds racing through a classical colosseum',
-  'climate':          'baroque landscape painting with industrial smoke corrupting the sky',
-  'energy-transition':'old and new energy symbols locked in classical combat',
-  'middle-east':      'ancient desert citadels under modern siege',
-  'ukraine-russia':   'golden domed cathedrals fractured by unseen force',
-  'global-economy':   'Renaissance merchants counting coins that dissolve as they fall',
-  'trade-wars':       'merchant ships colliding in a baroque harbor storm',
-  'migration-crisis': 'endless classical archways leading to darkness',
-  'inequality':       'Renaissance feast above, empty table below, baroque divide',
-  'free-speech':      'a mouth sealed with wax and rope in dramatic chiaroscuro',
-  'press-freedom':    'a printing press surrounded by encroaching shadows',
-  'social-media':     'classical portrait faces shattered into digital fragments'
+const NARRATIVE_COLORS = {
+  'security':      '#cc2200',
+  'humanitarian':  '#cc0066',
+  'analytical':    '#0099bb',
+  'diplomatic':    '#007744',
+  'economic':      '#cc7700',
+  'legal':         '#6633aa',
+  'investigative': '#0099bb',
+  'geopolitical':  '#cc4400',
+  'political':     '#8833aa',
+  'ideological':   '#cc0022',
+  'policy':        '#cc8800',
+  'factual':       '#445566'
 };
 
 // ── IMAGE GENERATION ──────────────────────────────────────────────────
@@ -264,11 +262,9 @@ async function generateArticleImage(article) {
   if (!FAL_KEY) return null;
 
   const narrative = article.narrative || 'analytical';
-  const room = article.room_id || 'global';
-  const symbol = NARRATIVE_SYMBOLS[narrative] || NARRATIVE_SYMBOLS['analytical'];
-  const anchor = ROOM_ANCHORS[room] || 'ancient architecture in dramatic chiaroscuro';
+  const scene = NARRATIVE_SCENES[narrative] || NARRATIVE_SCENES['analytical'];
 
-  const prompt = `A renaissance baroque oil painting in dramatic chiaroscuro lighting, classical composition with strong diagonal tension. The scene depicts ${symbol}, set against ${anchor}. Muted ochre and umber palette desaturated to near-monochrome. Overlaid with faint urban graffiti marks and protest symbols barely visible beneath the surface. Subtle digital glitch distortion fragmenting the corners and edges. A single vein of deep red bleeds through the cracks like a wound. No faces, no text, no flags, no recognizable people. High contrast. Cinematic. Thought-provoking editorial illustration. Museum quality oil painting texture.`;
+  const prompt = `Stark editorial illustration. Graphic design style. Bold flat shapes. High contrast. Near-black background. The image shows: ${scene}. Single dominant color accent. Deep red as the only warm accent element. No faces. No text. No flags. No recognizable symbols or logos. Clean composition. Powerful negative space. Political poster aesthetic. Saul Bass inspired. Simple. Austere. Thought-provoking. The image should feel like the cover of a serious magazine — immediate, symbolic, unambiguous. Matte finish. No gradients. No texture noise. No decorative elements.`;
 
   console.log('  🎨 Generating image for:', article.title?.substring(0,50));
 
