@@ -1,0 +1,16 @@
+{
+  "name": "helloman-service",
+  "version": "1.0.0",
+  "description": "Helloman.ai background pipeline service",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-cron": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
