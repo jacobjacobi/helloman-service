@@ -222,6 +222,122 @@ async function generateRoomArticle(roomId, roomTitle, articles) {
   } catch(e) { return null; }
 }
 
+// ── NARRATIVE PROMPT MAPS ────────────────────────────────────────────
+const NARRATIVE_SYMBOLS = {
+  'security':      'crumbling fortress walls and siege machinery, armored figures as shadows',
+  'humanitarian':  'empty vessels and absent figures, hollow spaces where people should be',
+  'analytical':    'celestial maps and mathematical diagrams being torn apart by unseen forces',
+  'diplomatic':    'two grand halls separated by a vast chasm, hands reaching across',
+  'economic':      'overflowing scales and cascading coins dissolving into smoke',
+  'legal':         'broken marble columns and scattered scrolls, blind justice tilted',
+  'investigative': 'hidden chambers revealed by candlelight, shadows concealing documents',
+  'geopolitical':  'ancient maps redrawn by trembling hands, borders bleeding into each other',
+  'political':     'thrones and crowns fragmenting, power symbols cracking from within',
+  'ideological':   'two opposing forces meeting at a fracture point, neither yielding',
+  'policy':        'architectural blueprints burning at the edges, order dissolving',
+  'factual':       'a mirror reflecting two different realities simultaneously'
+};
+
+const ROOM_ANCHORS = {
+  'iran-war-2026':    'fire and shadow over ancient Persian architecture',
+  'isr-pal':          'two cities sharing one sky, divided by darkness',
+  'ukraine-russia':   'wheat fields scorched, classical Eastern European architecture in ruins',
+  'us-china':         'Western and Eastern classical architecture facing each other across void',
+  'trump':            'neoclassical courthouse columns crumbling under their own weight',
+  'ai-reg':           'a thinking machine rendered in Renaissance style, circuits as veins',
+  'ai-race':          'mechanical minds racing through a classical colosseum',
+  'climate':          'baroque landscape painting with industrial smoke corrupting the sky',
+  'energy-transition':'old and new energy symbols locked in classical combat',
+  'middle-east':      'ancient desert citadels under modern siege',
+  'ukraine-russia':   'golden domed cathedrals fractured by unseen force',
+  'global-economy':   'Renaissance merchants counting coins that dissolve as they fall',
+  'trade-wars':       'merchant ships colliding in a baroque harbor storm',
+  'migration-crisis': 'endless classical archways leading to darkness',
+  'inequality':       'Renaissance feast above, empty table below, baroque divide',
+  'free-speech':      'a mouth sealed with wax and rope in dramatic chiaroscuro',
+  'press-freedom':    'a printing press surrounded by encroaching shadows',
+  'social-media':     'classical portrait faces shattered into digital fragments'
+};
+
+// ── IMAGE GENERATION ──────────────────────────────────────────────────
+async function generateArticleImage(article) {
+  if (!FAL_KEY) return null;
+
+  const narrative = article.narrative || 'analytical';
+  const room = article.room_id || 'global';
+  const symbol = NARRATIVE_SYMBOLS[narrative] || NARRATIVE_SYMBOLS['analytical'];
+  const anchor = ROOM_ANCHORS[room] || 'ancient architecture in dramatic chiaroscuro';
+
+  const prompt = `A renaissance baroque oil painting in dramatic chiaroscuro lighting, classical composition with strong diagonal tension. The scene depicts ${symbol}, set against ${anchor}. Muted ochre and umber palette desaturated to near-monochrome. Overlaid with faint urban graffiti marks and protest symbols barely visible beneath the surface. Subtle digital glitch distortion fragmenting the corners and edges. A single vein of deep red bleeds through the cracks like a wound. No faces, no text, no flags, no recognizable people. High contrast. Cinematic. Thought-provoking editorial illustration. Museum quality oil painting texture.`;
+
+  console.log('  🎨 Generating image for:', article.title?.substring(0,50));
+
+  try {
+    const r = await fetch('https://fal.run/fal-ai/flux/schnell', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Key ' + FAL_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        image_size: 'landscape_16_9',
+        num_inference_steps: 4,
+        num_images: 1,
+        enable_safety_checker: true
+      })
+    });
+
+    const data = await r.json();
+    if (data.images && data.images[0]) {
+      console.log('  ✅ Image generated:', data.images[0].url?.substring(0,60));
+      return data.images[0].url;
+    }
+    console.warn('  ⚠️  No image in response:', JSON.stringify(data).substring(0,200));
+    return null;
+  } catch(e) {
+    console.warn('  ⚠️  Image gen failed:', e.message);
+    return null;
+  }
+}
+
+// ── WINNER IMAGE UPDATER ──────────────────────────────────────────────
+async function updateWinnerImages() {
+  console.log('\n🎨 Updating winner images...');
+
+  const rooms = await sbFetch('rooms', 'select=id');
+  if (!Array.isArray(rooms)) return;
+
+  for (const room of rooms) {
+    // Get the #1 article in this room
+    const winners = await sbFetch('articles',
+      'room_id=eq.' + room.id + '&order=ai_score.desc&limit=1&select=id,title,narrative,room_id,ai_image_url'
+    );
+    if (!Array.isArray(winners) || winners.length === 0) continue;
+
+    const winner = winners[0];
+
+    // Skip if already has an image
+    if (winner.ai_image_url) {
+      console.log('  ⏭️  Already has image:', room.id);
+      continue;
+    }
+
+    const imageUrl = await generateArticleImage(winner);
+    if (!imageUrl) continue;
+
+    // Save image URL to article
+    await fetch(SUPABASE_URL + '/rest/v1/articles?id=eq.' + winner.id, {
+      method: 'PATCH',
+      headers: sbHeaders(),
+      body: JSON.stringify({ ai_image_url: imageUrl })
+    });
+
+    console.log('  ✅ Winner image saved for room:', room.id);
+    await new Promise(r => setTimeout(r, 1000));
+  }
+}
+
 // ── MAIN PIPELINE ─────────────────────────────────────────────────────
 async function runPipeline() {
   console.log('\n🚀 Pipeline starting:', new Date().toISOString());
@@ -322,11 +438,16 @@ async function runRoomArticles() {
 console.log('🌍 Helloman.ai service starting...');
 console.log('📡 Pipeline: every 4 hours');
 console.log('📝 Room articles: daily at 6am UTC');
+const FAL_KEY = process.env.FAL_KEY;
 console.log('Environment:', SUPABASE_URL ? '✅ Supabase connected' : '❌ Missing SUPABASE_URL');
+console.log('Image gen:', FAL_KEY ? '✅ fal.ai connected' : '⚠️  No FAL_KEY (images disabled)');
 
 // Run pipeline every 4 hours
 cron.schedule('0 */4 * * *', async () => {
-  try { await runPipeline(); }
+  try {
+    await runPipeline();
+    await updateWinnerImages();
+  }
   catch(e) { console.error('Pipeline error:', e.message); }
 });
 
@@ -340,6 +461,7 @@ cron.schedule('0 6 * * *', async () => {
 (async () => {
   try {
     await runPipeline();
+    await updateWinnerImages();
     await runRoomArticles();
   } catch(e) {
     console.error('Startup run error:', e.message);
