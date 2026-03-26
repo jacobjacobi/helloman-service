@@ -227,34 +227,22 @@ async function generateRoomArticle(roomId, roomTitle, articles) {
 // Style: stark graphic, political poster, Saul Bass inspired
 // Rule: one idea, one image, instantly readable
 
-const NARRATIVE_SCENES = {
-  'security':      'a single iron gate casting a long shadow across empty ground, the gate half open, light and darkness in perfect tension',
-  'humanitarian':  'an empty chair at a table set for many, one glass tipped on its side, stillness and absence',
-  'analytical':    'a perfect geometric grid dissolving at one corner, order meeting entropy at a single point',
-  'diplomatic':    'two chairs facing each other across a vast empty floor, neither occupied, the space between them everything',
-  'economic':      'a single scale perfectly balanced, one side holding a stone, the other holding smoke',
-  'legal':         'a tall doorway with no door, light beyond it, a long shadow falling back into darkness',
-  'investigative': 'a spotlight illuminating a single piece of paper on an otherwise empty floor',
-  'geopolitical':  'a horizon line with two suns, casting shadows in opposite directions',
-  'political':     'an empty podium, microphone still vibrating, the crowd implied by their absence',
-  'ideological':   'a single vertical line dividing the frame, left side light, right side dark, a crack running through it',
-  'policy':        'a blueprint pinned to a wall, one corner peeling away to reveal nothing behind it',
-  'factual':       'a magnifying glass over a surface that reflects something different than what it magnifies'
-};
-
-const NARRATIVE_COLORS = {
-  'security':      '#cc2200',
-  'humanitarian':  '#cc0066',
-  'analytical':    '#0099bb',
-  'diplomatic':    '#007744',
-  'economic':      '#cc7700',
-  'legal':         '#6633aa',
-  'investigative': '#0099bb',
-  'geopolitical':  '#cc4400',
-  'political':     '#8833aa',
-  'ideological':   '#cc0022',
-  'policy':        '#cc8800',
-  'factual':       '#445566'
+// Pure object/texture prompts — no scenes, no people, no figures
+// Each is a physical thing that can be photographed or abstracted
+// Short, specific, impossible to misinterpret as human
+const NARRATIVE_PROMPTS = {
+  'security':      'extreme macro photograph of barbed wire against pitch black, single red light source, razor sharp focus, no people',
+  'humanitarian':  'aerial view of empty plastic chairs arranged in rows on cracked concrete, harsh daylight, long shadows, no people',
+  'analytical':    'close-up of a compass on graph paper, ink bleeding into grid lines, high contrast black and white with red needle',
+  'diplomatic':    'two empty glasses on a bare table, condensation rings overlapping, one tipped slightly, stark overhead light',
+  'economic':      'macro photograph of worn coins and crumpled paper currency, extreme close-up texture, near-black background',
+  'legal':         'close-up of a broken wax seal on aged paper, red wax fragments scattered, dramatic raking light',
+  'investigative': 'single manila envelope on a black surface, one corner torn open, harsh spotlight from above, deep shadows',
+  'geopolitical':  'cracked dry earth aerial view, deep fissures forming irregular borders, red dust at crack edges',
+  'political':     'empty metal folding chair under a single harsh spotlight, everything else in darkness',
+  'ideological':   'torn photograph down the middle, the two halves slightly misaligned, cold blue light on left, warm red on right',
+  'policy':        'architectural blueprint close-up, some lines crossed out in red, corner burned away, harsh light',
+  'factual':       'broken mirror fragments on dark surface, each shard reflecting different light angles, cold and clinical'
 };
 
 // ── IMAGE GENERATION ──────────────────────────────────────────────────
@@ -262,14 +250,14 @@ async function generateArticleImage(article) {
   if (!FAL_KEY) return null;
 
   const narrative = article.narrative || 'analytical';
-  const scene = NARRATIVE_SCENES[narrative] || NARRATIVE_SCENES['analytical'];
+  const basePrompt = NARRATIVE_PROMPTS[narrative] || NARRATIVE_PROMPTS['analytical'];
 
-  const prompt = `Stark editorial illustration. Graphic design style. Bold flat shapes. High contrast. Near-black background. The image shows: ${scene}. Single dominant color accent. Deep red as the only warm accent element. No faces. No text. No flags. No recognizable symbols or logos. Clean composition. Powerful negative space. Political poster aesthetic. Saul Bass inspired. Simple. Austere. Thought-provoking. The image should feel like the cover of a serious magazine — immediate, symbolic, unambiguous. Matte finish. No gradients. No texture noise. No decorative elements.`;
+  const prompt = basePrompt + '. Editorial photography style. No human figures. No faces. No text. No logos. Cinematic. High contrast. The image should feel like it belongs on the cover of a serious international news magazine.';
 
   console.log('  🎨 Generating image for:', article.title?.substring(0,50));
 
   try {
-    const r = await fetch('https://fal.run/fal-ai/flux/schnell', {
+    const r = await fetch('https://fal.run/fal-ai/flux/dev', {
       method: 'POST',
       headers: {
         'Authorization': 'Key ' + FAL_KEY,
@@ -278,7 +266,7 @@ async function generateArticleImage(article) {
       body: JSON.stringify({
         prompt: prompt,
         image_size: 'landscape_16_9',
-        num_inference_steps: 4,
+        num_inference_steps: 25,
         num_images: 1,
         enable_safety_checker: true
       })
@@ -343,7 +331,7 @@ async function runPipeline() {
     const items = await fetchRSS(feed.url);
     totalFetched += items.length;
 
-    for (const item of items.slice(0, 2)) {
+    for (const item of items.slice(0, 5)) {
       const roomId = assignRoom(item.title, item.description);
       if (!roomId) continue;
 
@@ -398,7 +386,7 @@ async function runRoomArticles() {
 
   for (const room of rooms) {
     const articles = await sbFetch('articles',
-      'room_id=eq.' + room.id + '&order=ai_score.desc&limit=12&select=title,source,ai_score,narrative,stance,summary'
+      'room_id=eq.' + room.id + '&order=ai_score.desc&limit=20&select=title,source,ai_score,narrative,stance,summary'
     );
     if (!Array.isArray(articles) || articles.length < 2) continue;
 
