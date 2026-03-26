@@ -63,61 +63,218 @@ const ROOMS = {
 
 // ── RSS FEEDS ─────────────────────────────────────────────────────────
 const RSS_FEEDS = [
-  { name:'Al Jazeera',               url:'https://www.aljazeera.com/xml/rss/all.xml' },
-  { name:'BBC World',                url:'http://feeds.bbci.co.uk/news/world/rss.xml' },
-  { name:'BBC US & Canada',          url:'http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml' },
-  { name:'The Guardian World',       url:'https://www.theguardian.com/world/rss' },
-  { name:'Reuters World',            url:'https://feeds.reuters.com/reuters/worldnews' },
-  { name:'Reuters Business',         url:'https://feeds.reuters.com/reuters/businessNews' },
-  { name:'DW News',                  url:'https://rss.dw.com/rdf/rss-en-all' },
-  { name:'France 24',                url:'https://www.france24.com/en/rss' },
-  { name:'NPR News',                 url:'https://feeds.npr.org/1001/rss.xml' },
-  { name:'Associated Press',         url:'https://feeds.apnews.com/rss/apf-topnews' },
-  { name:'Foreign Policy',           url:'https://foreignpolicy.com/feed/' },
-  { name:'Foreign Affairs',          url:'https://www.foreignaffairs.com/rss.xml' },
-  { name:'Atlantic Council',         url:'https://www.atlanticcouncil.org/feed/' },
-  { name:'Lawfare',                  url:'https://www.lawfaremedia.org/rss.xml' },
-  { name:'The Intercept',            url:'https://theintercept.com/feed/?rss' },
-  { name:'Responsible Statecraft',   url:'https://responsiblestatecraft.org/feed/' },
-  { name:'The Atlantic',             url:'https://www.theatlantic.com/feed/all/' },
-  { name:'Politico',                 url:'https://rss.politico.com/politics-news.xml' },
-  { name:'Vox',                      url:'https://www.vox.com/rss/index.xml' },
-  { name:'Middle East Eye',          url:'https://www.middleeasteye.net/rss' },
-  { name:'Haaretz',                  url:'https://www.haaretz.com/srv/haaretz-eng.xml' },
-  { name:'MIT Tech Review',          url:'https://www.technologyreview.com/feed/' },
-  { name:'Wired',                    url:'https://www.wired.com/feed/rss' },
-  { name:'Ars Technica',             url:'https://feeds.arstechnica.com/arstechnica/index' },
-  { name:'The Verge',                url:'https://www.theverge.com/rss/index.xml' },
-  { name:'The Economist',            url:'https://www.economist.com/international/rss.xml' },
-  { name:'Project Syndicate',        url:'https://www.project-syndicate.org/rss' },
-  { name:'Carbon Brief',             url:'https://www.carbonbrief.org/feed' },
-  { name:'Guardian Environment',     url:'https://www.theguardian.com/environment/rss' },
-  { name:'The Diplomat',             url:'https://thediplomat.com/feed/' },
-  { name:'Human Rights Watch',       url:'https://www.hrw.org/rss' },
-  { name:'Amnesty International',    url:'https://www.amnesty.org/en/feed/' },
-  { name:'Africa Report',            url:'https://www.theafricareport.com/feed/' },
-  { name:'NACLA Latin America',      url:'https://nacla.org/rss.xml' },
-  { name:'Heather Cox Richardson',   url:'https://heathercoxrichardson.substack.com/feed' },
-  { name:'Robert Reich',             url:'https://robertreich.substack.com/feed' },
-  { name:'The Bulwark',              url:'https://www.thebulwark.com/feed/' },
-  { name:'Bari Weiss Free Press',    url:'https://www.thefp.com/feed' },
-  { name:'Ben Thompson Stratechery', url:'https://stratechery.com/feed/' },
-  { name:'Import AI',                url:'https://importai.substack.com/feed' },
-  { name:'Gary Marcus',              url:'https://garymarcus.substack.com/feed' },
-  { name:'Platformer',               url:'https://www.platformer.news/feed' },
-  { name:'Noah Smith Noahpinion',    url:'https://noahpinion.substack.com/feed' },
-  { name:'Heatmap News',             url:'https://heatmap.news/feed' },
-  { name:'Mondoweiss',               url:'https://mondoweiss.net/feed/' },
-  { name:'972 Magazine',             url:'https://www.972mag.com/feed/' },
-  { name:'Bellingcat',               url:'https://www.bellingcat.com/feed/' },
-  { name:'The Conversation',         url:'https://theconversation.com/global/articles.atom' },
-  { name:'openDemocracy',            url:'https://www.opendemocracy.net/en/rss.xml' },
-  { name:'Jacobin',                  url:'https://jacobin.com/feed/' },
-  { name:'National Review',          url:'https://www.nationalreview.com/feed/' },
-  { name:'The Dispatch',             url:'https://thedispatch.com/feed/' },
-  { name:'Democracy Now',            url:'https://www.democracynow.org/democracynow.rss' },
-  { name:'Judd Legum Popular Info',  url:'https://popular.info/feed' },
-  { name:'Tangle News',              url:'https://www.readtangle.com/feed' },
+  // ── GLOBAL TIER 1 — Major international news ─────────────────────
+  { name:'Al Jazeera English',        url:'https://www.aljazeera.com/xml/rss/all.xml' },
+  { name:'BBC World',                 url:'http://feeds.bbci.co.uk/news/world/rss.xml' },
+  { name:'BBC US & Canada',           url:'http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml' },
+  { name:'BBC Middle East',           url:'http://feeds.bbci.co.uk/news/world/middle_east/rss.xml' },
+  { name:'BBC Europe',                url:'http://feeds.bbci.co.uk/news/world/europe/rss.xml' },
+  { name:'Reuters World',             url:'https://feeds.reuters.com/reuters/worldnews' },
+  { name:'Reuters Business',          url:'https://feeds.reuters.com/reuters/businessNews' },
+  { name:'Reuters Politics',          url:'https://feeds.reuters.com/Reuters/PoliticsNews' },
+  { name:'AP Top News',               url:'https://feeds.apnews.com/rss/apf-topnews' },
+  { name:'AP World News',             url:'https://feeds.apnews.com/rss/apf-intlnews' },
+  { name:'AFP via France24',          url:'https://www.france24.com/en/rss' },
+  { name:'DW English',                url:'https://rss.dw.com/rdf/rss-en-all' },
+  { name:'DW Middle East',            url:'https://rss.dw.com/xml/rss-en-middleeast' },
+  { name:'NPR News',                  url:'https://feeds.npr.org/1001/rss.xml' },
+  { name:'NPR World',                 url:'https://feeds.npr.org/1004/rss.xml' },
+  { name:'Guardian World',            url:'https://www.theguardian.com/world/rss' },
+  { name:'Guardian US',               url:'https://www.theguardian.com/us-news/rss' },
+  { name:'Guardian Environment',      url:'https://www.theguardian.com/environment/rss' },
+  { name:'Guardian Technology',       url:'https://www.theguardian.com/technology/rss' },
+  { name:'Guardian Politics',         url:'https://www.theguardian.com/politics/rss' },
+
+  // ── US POLITICS & POLICY ──────────────────────────────────────────
+  { name:'Politico',                  url:'https://rss.politico.com/politics-news.xml' },
+  { name:'Politico Europe',           url:'https://www.politico.eu/feed/' },
+  { name:'The Hill',                  url:'https://thehill.com/feed/' },
+  { name:'Axios',                     url:'https://api.axios.com/feed/' },
+  { name:'Vox',                       url:'https://www.vox.com/rss/index.xml' },
+  { name:'The Atlantic',              url:'https://www.theatlantic.com/feed/all/' },
+  { name:'Slate',                     url:'https://feeds.slate.com/slate/all' },
+  { name:'Semafor',                   url:'https://www.semafor.com/feed' },
+  { name:'ProPublica',                url:'https://feeds.propublica.org/propublica/main' },
+  { name:'The Intercept',             url:'https://theintercept.com/feed/?rss' },
+
+  // ── ANALYSIS & FOREIGN POLICY ─────────────────────────────────────
+  { name:'Foreign Policy',            url:'https://foreignpolicy.com/feed/' },
+  { name:'Foreign Affairs',           url:'https://www.foreignaffairs.com/rss.xml' },
+  { name:'Atlantic Council',          url:'https://www.atlanticcouncil.org/feed/' },
+  { name:'Lawfare',                   url:'https://www.lawfaremedia.org/rss.xml' },
+  { name:'War on the Rocks',          url:'https://warontherocks.com/feed/' },
+  { name:'Responsible Statecraft',    url:'https://responsiblestatecraft.org/feed/' },
+  { name:'The National Interest',     url:'https://nationalinterest.org/rss.xml' },
+  { name:'Council on Foreign Relations', url:'https://www.cfr.org/rss/region/all' },
+  { name:'Brookings',                 url:'https://www.brookings.edu/feed/' },
+  { name:'Carnegie Endowment',        url:'https://carnegieendowment.org/rss/solr.xml' },
+  { name:'RAND',                      url:'https://www.rand.org/pubs/rss.xml' },
+  { name:'Wilson Center',             url:'https://www.wilsoncenter.org/feed' },
+  { name:'Chatham House',             url:'https://www.chathamhouse.org/rss.xml' },
+  { name:'ECFR',                      url:'https://ecfr.eu/feed/' },
+  { name:'ICG Crisis Group',          url:'https://www.crisisgroup.org/rss.xml' },
+
+  // ── MIDDLE EAST ───────────────────────────────────────────────────
+  { name:'Middle East Eye',           url:'https://www.middleeasteye.net/rss' },
+  { name:'Haaretz English',           url:'https://www.haaretz.com/srv/haaretz-eng.xml' },
+  { name:'Jerusalem Post',            url:'https://www.jpost.com/rss/rssfeedsfrontpage.aspx' },
+  { name:'Arab News',                 url:'https://www.arabnews.com/rss.xml' },
+  { name:'Al-Monitor',                url:'https://www.al-monitor.com/rss' },
+  { name:'Mondoweiss',                url:'https://mondoweiss.net/feed/' },
+  { name:'972 Magazine',              url:'https://www.972mag.com/feed/' },
+  { name:'Iran International',        url:'https://www.iranintl.com/en/rss' },
+  { name:'Middle East Monitor',       url:'https://www.middleeastmonitor.com/feed/' },
+
+  // ── EUROPE ────────────────────────────────────────────────────────
+  { name:'EUobserver',                url:'https://euobserver.com/feed' },
+  { name:'Euronews',                  url:'https://feeds.feedburner.com/euronews/en/news/' },
+  { name:'EU Politics',               url:'https://www.politico.eu/feed/' },
+  { name:'Der Spiegel International', url:'https://www.spiegel.de/international/index.rss' },
+  { name:'Le Monde Diplomatique',     url:'https://mondediplo.com/feed/full' },
+  { name:'openDemocracy',             url:'https://www.opendemocracy.net/en/rss.xml' },
+
+  // ── RUSSIA & EASTERN EUROPE ───────────────────────────────────────
+  { name:'Meduza English',            url:'https://meduza.io/en/rss/all' },
+  { name:'Moscow Times',              url:'https://www.themoscowtimes.com/rss/news' },
+  { name:'Kyiv Independent',          url:'https://kyivindependent.com/feed/' },
+
+  // ── ASIA & PACIFIC ────────────────────────────────────────────────
+  { name:'South China Morning Post',  url:'https://www.scmp.com/rss/91/feed' },
+  { name:'The Diplomat',              url:'https://thediplomat.com/feed/' },
+  { name:'Nikkei Asia',               url:'https://asia.nikkei.com/rss/feed/nar' },
+  { name:'The Wire India',            url:'https://thewire.in/feed' },
+  { name:'Straits Times',             url:'https://www.straitstimes.com/news/world/rss.xml' },
+  { name:'Asia Times',                url:'https://asiatimes.com/feed/' },
+  { name:'Radio Free Asia',           url:'https://www.rfa.org/english/rss2.xml' },
+
+  // ── AFRICA ────────────────────────────────────────────────────────
+  { name:'Africa Report',             url:'https://www.theafricareport.com/feed/' },
+  { name:'AllAfrica',                 url:'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf' },
+  { name:'African Arguments',         url:'https://africanarguments.org/feed/' },
+  { name:'Daily Maverick',            url:'https://www.dailymaverick.co.za/feed/' },
+  { name:'Mail & Guardian Africa',    url:'https://mg.co.za/feed/' },
+
+  // ── LATIN AMERICA ─────────────────────────────────────────────────
+  { name:'NACLA',                     url:'https://nacla.org/rss.xml' },
+  { name:'Americas Quarterly',        url:'https://www.americasquarterly.org/feed/' },
+  { name:'LASA Forum',                url:'https://lasaweb.org/feed/' },
+
+  // ── TECHNOLOGY & AI ───────────────────────────────────────────────
+  { name:'MIT Tech Review',           url:'https://www.technologyreview.com/feed/' },
+  { name:'Wired',                     url:'https://www.wired.com/feed/rss' },
+  { name:'Ars Technica',              url:'https://feeds.arstechnica.com/arstechnica/index' },
+  { name:'The Verge',                 url:'https://www.theverge.com/rss/index.xml' },
+  { name:'TechCrunch',                url:'https://feeds.feedburner.com/TechCrunch/' },
+  { name:'Rest of World',             url:'https://restofworld.org/feed/latest' },
+  { name:'Protocol (via archive)',    url:'https://www.protocol.com/feeds/feed.rss' },
+
+  // ── ECONOMICS & FINANCE ───────────────────────────────────────────
+  { name:'The Economist',             url:'https://www.economist.com/international/rss.xml' },
+  { name:'Project Syndicate',         url:'https://www.project-syndicate.org/rss' },
+  { name:'Naked Capitalism',          url:'https://www.nakedcapitalism.com/feed' },
+  { name:'Bloomberg Opinion',         url:'https://feeds.bloomberg.com/politics/news.rss' },
+  { name:'FT World',                  url:'https://www.ft.com/world?format=rss' },
+
+  // ── CLIMATE & ENVIRONMENT ─────────────────────────────────────────
+  { name:'Carbon Brief',              url:'https://www.carbonbrief.org/feed' },
+  { name:'Climate Home News',         url:'https://www.climatechangenews.com/feed/' },
+  { name:'Inside Climate News',       url:'https://insideclimatenews.org/feed/' },
+  { name:'Grist',                     url:'https://grist.org/feed/' },
+  { name:'DeSmog',                    url:'https://www.desmog.com/feed/' },
+  { name:'E&E News',                  url:'https://www.eenews.net/rss/eenewspm' },
+
+  // ── HUMAN RIGHTS & JUSTICE ───────────────────────────────────────
+  { name:'Human Rights Watch',        url:'https://www.hrw.org/rss' },
+  { name:'Amnesty International',     url:'https://www.amnesty.org/en/feed/' },
+  { name:'International Justice Monitor', url:'https://www.ijmonitor.org/feed/' },
+  { name:'The New Humanitarian',      url:'https://www.thenewhumanitarian.org/rss.xml' },
+  { name:'ICRC',                      url:'https://www.icrc.org/en/rss' },
+
+  // ── INVESTIGATIVE & ACCOUNTABILITY ───────────────────────────────
+  { name:'Bellingcat',                url:'https://www.bellingcat.com/feed/' },
+  { name:'The Bureau of Investigative Journalism', url:'https://www.thebureauinvestigates.com/feed' },
+  { name:'OCCRP',                     url:'https://www.occrp.org/en/feed' },
+  { name:'Intercept',                 url:'https://theintercept.com/feed/?rss' },
+  { name:'Democracy Now',             url:'https://www.democracynow.org/democracynow.rss' },
+
+  // ── LEFT PERSPECTIVE ─────────────────────────────────────────────
+  { name:'Jacobin',                   url:'https://jacobin.com/feed/' },
+  { name:'The Nation',                url:'https://www.thenation.com/feed/?post_type=article' },
+  { name:'In These Times',            url:'https://inthesetimes.com/feed' },
+  { name:'Current Affairs',           url:'https://www.currentaffairs.org/feed' },
+  { name:'Truthout',                  url:'https://truthout.org/feed/' },
+
+  // ── RIGHT/CONSERVATIVE PERSPECTIVE ───────────────────────────────
+  { name:'National Review',           url:'https://www.nationalreview.com/feed/' },
+  { name:'The Dispatch',              url:'https://thedispatch.com/feed/' },
+  { name:'The Bulwark',               url:'https://www.thebulwark.com/feed/' },
+  { name:'Commentary',                url:'https://www.commentary.org/feed/' },
+  { name:'City Journal',              url:'https://www.city-journal.org/feed' },
+  { name:'Quillette',                 url:'https://quillette.com/feed/' },
+
+  // ── ACADEMIC & LONG-FORM ─────────────────────────────────────────
+  { name:'The Conversation',          url:'https://theconversation.com/global/articles.atom' },
+  { name:'Aeon',                      url:'https://aeon.co/feed.rss' },
+  { name:'Boston Review',             url:'https://bostonreview.net/feed/' },
+  { name:'Dissent',                   url:'https://www.dissentmagazine.org/feed' },
+  { name:'NYRB',                      url:'https://feeds.feedburner.com/nybooks' },
+
+  // ── SUBSTACK — GEOPOLITICS ────────────────────────────────────────
+  { name:'Caitlin Johnstone',         url:'https://caitlinjohnstone.substack.com/feed' },
+  { name:'Responsible Statecraft Sub',url:'https://responsiblestatecraft.substack.com/feed' },
+  { name:'The Ops Desk',              url:'https://theopsdesk.substack.com/feed' },
+  { name:'Pearls and Irritations',    url:'https://johnmenadue.com/feed/' },
+  { name:'Tangle News',               url:'https://www.readtangle.com/feed' },
+
+  // ── SUBSTACK — US POLITICS ────────────────────────────────────────
+  { name:'Heather Cox Richardson',    url:'https://heathercoxrichardson.substack.com/feed' },
+  { name:'Robert Reich',              url:'https://robertreich.substack.com/feed' },
+  { name:'Judd Legum Popular Info',   url:'https://popular.info/feed' },
+  { name:'Bari Weiss Free Press',     url:'https://www.thefp.com/feed' },
+  { name:'The Ink',                   url:'https://the.ink/feed' },
+  { name:'Slow Boring',               url:'https://www.slowboring.com/feed' },
+
+  // ── SUBSTACK — TECHNOLOGY & AI ───────────────────────────────────
+  { name:'Ben Thompson Stratechery',  url:'https://stratechery.com/feed/' },
+  { name:'Import AI',                 url:'https://importai.substack.com/feed' },
+  { name:'Gary Marcus',               url:'https://garymarcus.substack.com/feed' },
+  { name:'Platformer',                url:'https://www.platformer.news/feed' },
+  { name:'Noah Smith Noahpinion',     url:'https://noahpinion.substack.com/feed' },
+  { name:'Doomberg',                  url:'https://doomberg.substack.com/feed' },
+  { name:'Heatmap News',              url:'https://heatmap.news/feed' },
+
+  // ── SUBSTACK — MIDDLE EAST & CONFLICT ────────────────────────────
+  { name:'Josh Hammer',               url:'https://joshhammer.substack.com/feed' },
+  { name:'Puck News',                 url:'https://puck.news/feed/' },
+  { name:'Grid News',                 url:'https://gridnews.substack.com/feed' },
+
+  // ── PODCASTS WITH TRANSCRIPTS/ARTICLES ───────────────────────────
+  { name:'Crooked Media',             url:'https://crooked.com/feed/podcast' },
+  { name:'Chapo Trap House',          url:'https://feeds.simplecast.com/lU7NMoZR' },
+
+  // ── GLOBAL SOUTH & NON-WESTERN ───────────────────────────────────
+  { name:'Peoples Dispatch',          url:'https://peoplesdispatch.org/feed/' },
+  { name:'Tricontinental',            url:'https://thetricontinental.org/feed/' },
+  { name:'Global Voices',             url:'https://globalvoices.org/feed/' },
+  { name:'The Eastern Herald',        url:'https://theeasternherald.com/feed/' },
+
+  // ── PRESS FREEDOM & MEDIA ─────────────────────────────────────────
+  { name:'Committee to Protect Journalists', url:'https://cpj.org/feed/' },
+  { name:'RSF Reporters Without Borders', url:'https://rsf.org/en/rss' },
+  { name:'Columbia Journalism Review', url:'https://www.cjr.org/feed' },
+  { name:'Nieman Lab',                url:'https://www.niemanlab.org/feed/' },
+
+  // ── SCIENCE & HEALTH ──────────────────────────────────────────────
+  { name:'Nature News',               url:'https://www.nature.com/nature.rss' },
+  { name:'Science',                   url:'https://www.science.org/rss/news_current.xml' },
+  { name:'STAT News',                 url:'https://www.statnews.com/feed/' },
+  { name:'Undark',                    url:'https://undark.org/feed/' },
+
+  // ── NUCLEAR & SECURITY ────────────────────────────────────────────
+  { name:'Arms Control Association',  url:'https://www.armscontrol.org/rss.xml' },
+  { name:'Bulletin of Atomic Scientists', url:'https://thebulletin.org/feed/' },
+  { name:'Just Security',             url:'https://www.justsecurity.org/feed/' },
+  { name:'Stimson Center',            url:'https://www.stimson.org/feed/' },
 ];
 
 // ── SUPABASE HELPERS ──────────────────────────────────────────────────
