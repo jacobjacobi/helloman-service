@@ -11,6 +11,390 @@ const ANTHROPIC_KEY = process.env.ANTHROPIC_KEY;
 
 // ── ROOMS ─────────────────────────────────────────────────────────────
 const ROOMS = {
+  'iran-war-2026':   { title:'War on Iran', keywords:[
+    'iran','iranian','tehran','khamenei','irgc','natanz','fordow','hormuz','persian gulf',
+    'iran war','iran strike','iran nuclear','iran attack','iran military','iran bomb',
+    'strait of hormuz','iran oil','iran missile','iran drone','iran retaliation',
+    'us iran','israel iran','iran conflict','iran crisis','iran 2026','iranian regime',
+    'iran revolution guard','iran proxy','iran hezbollah','iran hamas','iran yemen'
+  ]},
+  'isr-pal':         { title:'War in Gaza', keywords:[
+    'gaza','hamas','israel','israeli','palestinian','west bank','idf','rafah','netanyahu',
+    'ceasefire','occupied territories','intifada','settler','settlement','al-aqsa',
+    'two-state','one-state','occupation','blockade','siege','civilian casualties gaza',
+    'un gaza','icj israel','genocide israel','war crimes israel','hostage israel',
+    'october 7','hamas attack','israel ground','gaza strip','ramallah','jenin','hebron',
+    'un relief','unrwa','gaza hospital','gaza famine','displacement gaza'
+  ]},
+  'ukraine-russia':  { title:'Ukraine War', keywords:[
+    'ukraine','ukrainian','russia','russian','zelensky','putin','kyiv','moscow',
+    'nato ukraine','crimea','donbas','kharkiv','zaporizhzhia','mariupol','bakhmut',
+    'russian invasion','russian military','russian army','russian offensive',
+    'ukraine aid','ukraine weapons','ukraine nato','ukraine peace','ukraine ceasefire',
+    'russian drone','russian missile','russian strike','wagner','prigozhin',
+    'sanctions russia','russian economy','russian oil','nord stream',
+    'moldova','belarus lukashenko','russian nuclear','ukraine grain'
+  ]},
+  'sudan-war':       { title:'Sudan Crisis', keywords:[
+    'sudan','sudanese','khartoum','rsf','darfur','sudan war','sudan crisis','sudan famine',
+    'rapid support forces','sudanese army','sudan ceasefire','sudan displaced',
+    'sudan humanitarian','sudan conflict','hemedti','sudan civilians','sudan atrocities',
+    'sudan peace','chad sudan','south sudan','sudan refugees'
+  ]},
+  'myanmar-war':     { title:'Myanmar', keywords:[
+    'myanmar','burma','burmese','rohingya','junta','tatmadaw','myanmar coup',
+    'myanmar civil war','myanmar resistance','myanmar military','aung san suu kyi',
+    'national unity government','myanmar rebel','arakan','shan','karen','myanmar atrocities',
+    'myanmar sanctions','myanmar refugees','myanmar china'
+  ]},
+  'us-china':        { title:'US vs China', keywords:[
+    'us china','china trade','china tariff','south china sea','xi jinping',
+    'china sanctions','china decoupling','china competition','china rivalry',
+    'china tech','china chips','semiconductor china','tiktok china','huawei',
+    'china military','pla','china navy','china threat','china spy',
+    'china economy','china slowdown','china property','china growth',
+    'biden china','trump china','china taiwan','indo-pacific','quad alliance',
+    'china africa','china belt road','china influence','wolf warrior','china balloon'
+  ]},
+  'iran':            { title:'Iran & the US', keywords:[
+    'iran sanctions','jcpoa','iran nuclear deal','iran diplomacy','iran economy',
+    'iran protests','iran regime','iran opposition','mahsa amini','iran women',
+    'iran deal','iran enrichment','iran uranium','iran talks','iran negotiations',
+    'iran us relations','iran proxy war','iran middle east','iranian economy',
+    'iran inflation','iran currency','iran oil sanctions','iranian diaspora'
+  ]},
+  'taiwan-strait':   { title:'Taiwan', keywords:[
+    'taiwan','taiwanese','taipei','strait of taiwan','china taiwan','pla taiwan',
+    'taiwan independence','taiwan election','tsai','lai ching-te','taiwan military',
+    'taiwan invasion','taiwan blockade','china reunification','taiwan recognition',
+    'taiwan semiconductor','tsmc','taiwan chips','taiwan us','taiwan defense',
+    'one china','taiwan strait crisis','pelosi taiwan'
+  ]},
+  'nato-expansion':  { title:'NATO', keywords:[
+    'nato','article 5','nato expansion','nato summit','transatlantic','nato ukraine',
+    'nato russia','nato enlargement','finland nato','sweden nato','nato spending',
+    'nato defense','collective defense','nato troops','nato eastern flank',
+    'nato germany','nato poland','nato baltic','nato turkey','nato hungary',
+    'trump nato','nato burden sharing','nato china'
+  ]},
+  'brics-rise':      { title:'BRICS', keywords:[
+    'brics','global south','dedollarization','multipolar','brics summit','brics expansion',
+    'brics currency','new development bank','brics oil','brics trade',
+    'global south governance','un reform brics','g20 global south',
+    'dollar dominance','petrodollar','non-western','emerging economies alliance',
+    'brics india','brics brazil','brics south africa','brics iran','brics saudi'
+  ]},
+  'arctic-race':     { title:'Arctic Race', keywords:[
+    'arctic','greenland','svalbard','northern sea route','arctic oil','arctic military',
+    'arctic sovereignty','arctic nato','russia arctic','china arctic',
+    'arctic climate','permafrost','arctic shipping','northwest passage',
+    'arctic resources','arctic drilling','greenland independence','trump greenland'
+  ]},
+  'middle-east':     { title:'Middle East', keywords:[
+    'saudi arabia','saudi','riyadh','mbs','mohammed bin salman',
+    'hezbollah','houthi','yemen','lebanon','beirut','syria','bashar',
+    'gulf states','uae','dubai','qatar','bahrain','jordan',
+    'arab normalization','abraham accords','saudi israel',
+    'iran proxies','axis of resistance','shia crescent',
+    'middle east stability','regional war','gulf war','arab spring'
+  ]},
+  'trump':           { title:'Trump', keywords:[
+    'trump indictment','trump trial','trump prosecution','espionage act',
+    'trump criminal','trump charges','trump conviction','trump verdict',
+    'trump guilty','trump acquitted','trump appeal','trump sentence',
+    'trump classified','mar-a-lago raid','jack smith','alvin bragg',
+    'trump hush money','trump january 6','trump insurrection',
+    'trump immunity','supreme court trump','trump legal','maga',
+    'trump 2026','trump administration','trump policy','trump tariff',
+    'trump executive order','trump cabinet','trump fired','trump pardons'
+  ]},
+  'us-election-2026':{ title:'US Midterms', keywords:[
+    'midterm','2026 election','us election','congress election','senate race',
+    'house race','democrat republican 2026','election results','polling',
+    'swing state','battleground','voter','ballot','gerrymandering',
+    'election integrity','voting rights','electoral college',
+    'democratic party','republican party','gop','dnc','rnc',
+    'kamala harris','biden democrat','trump republican'
+  ]},
+  'us-immigration':  { title:'Immigration', keywords:[
+    'us immigration','border crisis','deportation','ice raids','undocumented',
+    'migrant border','southern border','asylum seeker','border wall',
+    'title 42','remain in mexico','daca','dreamers','immigration reform',
+    'border patrol','customs enforcement','ice','cbp','immigration court',
+    'migrant detention','family separation','unaccompanied minors',
+    'visa','green card','immigration policy','illegal immigration',
+    'mass deportation','sanctuary city','immigration enforcement'
+  ]},
+  'us-economy':      { title:'US Economy', keywords:[
+    'us economy','us tariff','us inflation','federal reserve','us gdp',
+    'us recession','powell fed','interest rates','fed rate','cpi',
+    'unemployment rate','jobs report','us debt','deficit spending',
+    'stock market','wall street','dow jones','nasdaq','s&p 500',
+    'us trade','trade deficit','us manufacturing','supply chain',
+    'dollar strength','treasury yield','us budget','debt ceiling',
+    'tax cuts','trump tariffs','economic growth','consumer spending'
+  ]},
+  'us-supreme-court':{ title:'Supreme Court', keywords:[
+    'supreme court','scotus','supreme court ruling','abortion ruling',
+    'gun ruling','executive power','scotus decision','supreme court case',
+    'roe v wade','dobbs','second amendment','first amendment',
+    'judicial review','supreme court justice','confirmation hearing',
+    'thomas','alito','roberts','kavanaugh','barrett','jackson','gorsuch',
+    'court packing','judicial reform','constitutional law'
+  ]},
+  'ai-reg':          { title:'AI Regulation', keywords:[
+    'ai regulation','eu ai act','ai law','artificial intelligence regulation',
+    'ai governance','ai policy','ai legislation','ai safety law',
+    'ai liability','ai transparency','ai bias','ai accountability',
+    'ai rights','ai ban','ai oversight','ai watchdog','ai compliance',
+    'ai employment law','ai copyright','ai deepfake law',
+    'china ai regulation','us ai policy','uk ai safety'
+  ]},
+  'ai-race':         { title:'AI Race', keywords:[
+    'openai','anthropic','google gemini','gpt','claude ai','llm',
+    'large language model','ai race','deepseek','mistral','meta llama',
+    'ai model','ai breakthrough','ai capabilities','agi','superintelligence',
+    'ai benchmark','ai safety','alignment','ai existential','ai takeover',
+    'nvidia','ai chips','ai compute','ai investment','ai valuation',
+    'chatgpt','gemini','copilot','ai assistant','ai coding','ai agents'
+  ]},
+  'big-tech':        { title:'Big Tech', keywords:[
+    'google antitrust','apple antitrust','meta antitrust','amazon antitrust',
+    'big tech','tech monopoly','tech regulation','platform regulation',
+    'google search','google advertising','apple app store','meta facebook',
+    'amazon aws','microsoft monopoly','tech breakup','doj tech',
+    'ftc tech','eu digital markets act','dsa','dma','tech accountability',
+    'surveillance capitalism','data privacy','gdpr'
+  ]},
+  'social-media':    { title:'Social Media', keywords:[
+    'twitter x','facebook','instagram','social media','misinformation',
+    'content moderation','elon musk twitter','x platform','threads',
+    'social media algorithm','echo chamber','filter bubble',
+    'social media mental health','social media addiction','teen social media',
+    'disinformation','hate speech online','platform ban','deplatform',
+    'social media election','facebook papers','instagram harm','tiktok ban'
+  ]},
+  'tiktok-ban':      { title:'TikTok', keywords:[
+    'tiktok','bytedance','tiktok us','tiktok ban','tiktok china',
+    'tiktok divest','tiktok legislation','tiktok security','tiktok data',
+    'tiktok congress','tiktok lawsuit','tiktok sell','tiktok future'
+  ]},
+  'crypto':          { title:'Crypto', keywords:[
+    'bitcoin','ethereum','crypto','cryptocurrency','blockchain',
+    'defi','crypto regulation','sec crypto','bitcoin price',
+    'crypto market','crypto crash','stablecoin','cbdc',
+    'central bank digital','nft','web3','crypto fraud','ftx',
+    'binance','coinbase','crypto exchange','bitcoin etf'
+  ]},
+  'space-race':      { title:'Space', keywords:[
+    'spacex','nasa','moon mission','starship','space station','space race',
+    'space launch','artemis','lunar','mars mission','space exploration',
+    'satellite','starlink','space debris','space weapons','space military',
+    'china space','russia space','roscosmos','blue origin','virgin galactic',
+    'james webb telescope','asteroid','space economy'
+  ]},
+  'climate':         { title:'Climate Crisis', keywords:[
+    'climate change','global warming','carbon emissions','net zero','ipcc',
+    'climate crisis','extreme weather','sea level','heat wave','wildfire',
+    'flooding','drought','glacier','arctic ice','coral reef',
+    'carbon tax','emissions trading','paris agreement','cop','fossil fuels',
+    'renewable energy','solar','wind','climate refugee','climate migration',
+    'climate tipping point','1.5 degrees','2 degrees','climate denial',
+    'climate action','green new deal','climate finance'
+  ]},
+  'energy-transition':{ title:'Energy', keywords:[
+    'renewable energy','solar power','wind power','energy transition',
+    'fossil fuels','oil price','gas price','energy crisis','nuclear energy',
+    'lng','natural gas','coal','oil company','energy security',
+    'hydrogen','battery storage','electric vehicle','ev','charging',
+    'opec','saudi oil','energy independence','power grid',
+    'offshore wind','solar farm','energy poverty','just transition'
+  ]},
+  'cop-climate':     { title:'COP', keywords:[
+    'cop30','cop29','cop28','cop climate','unfccc','paris agreement',
+    'climate pledge','emissions target','nationally determined','ndc',
+    'loss and damage','climate finance','green climate fund',
+    'climate negotiation','climate summit','climate conference',
+    'carbon offset','net zero pledge','fossil fuel phase out'
+  ]},
+  'global-economy':  { title:'Global Economy', keywords:[
+    'global economy','world economy','imf','world bank','global recession',
+    'economic growth','global inflation','g7','g20','global trade',
+    'supply chain','world trade','global gdp','economic slowdown',
+    'developing countries','emerging markets','debt crisis','fiscal policy',
+    'monetary policy','global interest rates','world bank report','imf forecast'
+  ]},
+  'trade-wars':      { title:'Trade Wars', keywords:[
+    'trade war','tariff','trade deficit','wto','trade sanctions','trade deal',
+    'protectionism','trade barrier','import duty','export control',
+    'trade agreement','free trade','nafta','usmca','trade retaliation',
+    'china tariff','trump tariff','eu tariff','trade dispute','trade bloc',
+    'supply chain decoupling','economic coercion','trade weapon'
+  ]},
+  'debt-crisis':     { title:'Debt Crisis', keywords:[
+    'sovereign debt','debt crisis','debt default','imf bailout','debt restructuring',
+    'fiscal crisis','national debt','government debt','debt ceiling',
+    'debt relief','debt trap','china debt','belt road debt','pakistan debt',
+    'argentina default','sri lanka default','zambia debt','ghana debt',
+    'debt sustainability','bond market','credit rating','fiscal cliff',
+    'austerity','public spending','budget deficit'
+  ]},
+  'food-security':   { title:'Food Crisis', keywords:[
+    'food security','food crisis','famine','hunger','food prices',
+    'wheat supply','grain','food shortage','malnutrition','starvation',
+    'wfp','world food programme','food aid','food inflation',
+    'ukraine grain deal','black sea grain','food supply chain',
+    'agricultural crisis','crop failure','food access','food poverty',
+    'sahel famine','horn of africa food','gaza famine','food as weapon'
+  ]},
+  'pandemic-prep':   { title:'Pandemic Prep', keywords:[
+    'pandemic','who pandemic','disease outbreak','mpox','bird flu','h5n1',
+    'pandemic preparedness','pandemic treaty','who reform','global health security',
+    'zoonotic disease','pathogen','biosecurity','bioweapon','lab leak',
+    'covid variant','long covid','vaccine','public health emergency',
+    'epidemic','endemic','quarantine','contact tracing','health surveillance'
+  ]},
+  'mental-health':   { title:'Mental Health', keywords:[
+    'mental health','depression','anxiety','suicide rate','mental health crisis',
+    'youth mental health','teen depression','social media mental health',
+    'loneliness epidemic','mental health services','psychiatry','therapy',
+    'mental health funding','burnout','stress','trauma','ptsd',
+    'addiction','opioid','substance abuse','mental health policy'
+  ]},
+  'drug-policy':     { title:'Drug Policy', keywords:[
+    'drug policy','drug legalisation','cannabis','fentanyl','opioid',
+    'drug decriminalization','war on drugs','narcotics','drug trafficking',
+    'cartel','drug overdose','harm reduction','needle exchange',
+    'drug reform','portugal drugs','oregon drugs','drug court',
+    'cocaine','methamphetamine','drug enforcement','dea'
+  ]},
+  'free-speech':     { title:'Free Speech', keywords:[
+    'free speech','censorship','content moderation','cancel culture',
+    'first amendment','online freedom','hate speech','defamation',
+    'platform ban','deplatform','misinformation','disinformation',
+    'government censorship','internet freedom','press freedom',
+    'academic freedom','book ban','banned books','free expression',
+    'chilling effect','speech regulation'
+  ]},
+  'gender-rights':   { title:'Gender Rights', keywords:[
+    'trans rights','transgender','gender identity','gender medicine',
+    'trans ban','lgbtq rights','nonbinary','gender affirming care',
+    'trans athletes','bathroom bill','gender ideology',
+    'women rights','abortion rights','reproductive rights','feminism',
+    'gender pay gap','metoo','sexual harassment','domestic violence',
+    'lgbtq discrimination','same sex','marriage equality'
+  ]},
+  'migration-crisis':{ title:'Migration', keywords:[
+    'migration','refugee','asylum seeker','migrants europe','channel crossing',
+    'mediterranean migrants','displacement','internally displaced',
+    'rohingya','syrian refugee','afghan refugee','climate migration',
+    'migration policy','border control','deportation','immigration detention',
+    'unhcr','refugee camp','boat people','migrant deaths',
+    'eu migration','uk migration','us border','migration crisis'
+  ]},
+  'inequality':      { title:'Inequality', keywords:[
+    'inequality','wealth gap','billionaire','poverty','wealth tax',
+    'income inequality','social mobility','class','working class',
+    'gini coefficient','top 1 percent','oxfam inequality','wealth concentration',
+    'homelessness','housing affordability','living wage','minimum wage',
+    'union workers','labor rights','economic justice','redistribution',
+    'universal basic income','welfare state','social safety net'
+  ]},
+  'press-freedom':   { title:'Press Freedom', keywords:[
+    'press freedom','journalist jailed','media censorship','journalist killed',
+    'rsf','reporter without borders','free press','independent media',
+    'journalist arrested','media crackdown','state media','propaganda',
+    'disinformation campaign','media ownership','cpj journalist',
+    'press freedom index','assange','julian assange','whistleblower',
+    'source protection','journalist safety','foreign correspondent'
+  ]},
+  'china-domestic':  { title:'China', keywords:[
+    'china economy','xi jinping','chinese politics','china property',
+    'evergrande','china growth','china crackdown','china surveillance',
+    'xinjiang','uyghur','tibet','hong kong','china protest',
+    'china zero covid','china population','china youth','lying flat',
+    'china communist party','politburo','national congress china',
+    'china innovation','china tech sector','alibaba','tencent regulation',
+    'china media','great firewall','china social credit'
+  ]},
+  'russia-domestic': { title:'Russia', keywords:[
+    'russia economy','russia sanctions','russia opposition','navalny',
+    'russia repression','russian ruble','russia war economy',
+    'russia propaganda','russia media','rt','russia censorship',
+    'russia protest','anti-war russia','russia draft','russian soldiers',
+    'russia oligarch','russian elite','kremlin','russia isolation',
+    'russian civil society','russia human rights','memorial russia'
+  ]},
+  'india-politics':  { title:'India', keywords:[
+    'modi','india election','bjp','india economy','hindu nationalism',
+    'india china','india pakistan','india growth','hindutva',
+    'kashmir','india media','india protest','india democracy',
+    'india inequality','india caste','india farmer','india tech',
+    'india us relations','quad india','india russia','india trade',
+    'india gdp','india inflation','india infrastructure'
+  ]},
+  'europe-politics': { title:'Europe', keywords:[
+    'european union','eu','far right europe','macron','scholz','meloni',
+    'europe election','populism europe','le pen','rassemblement national',
+    'afd germany','wilders netherlands','orban hungary','salvini',
+    'europe migration','europe energy','europe defense','european army',
+    'brexit','uk europe','eu enlargement','ukraine eu',
+    'europe democracy','rule of law eu','poland judiciary','europe economy'
+  ]},
+  'africa-politics': { title:'Africa', keywords:[
+    'africa','sahel','coup africa','mali','niger','burkina faso',
+    'africa china','african union','africa economy','africa debt',
+    'ethiopia tigray','somalia','sudan','mozambique','democratic republic congo',
+    'africa election','africa democracy','africa military',
+    'ecowas','au african union','africa development','africa aid',
+    'africa climate','africa food','africa youth','africa technology'
+  ]},
+  'latin-america':   { title:'Latin America', keywords:[
+    'latin america','mexico','brazil lula','argentina milei','venezuela',
+    'colombia','chile','cuba','central america','haiti',
+    'mexico cartel','drug violence','latin america migration',
+    'latin america economy','latin america election','populism latin',
+    'bolsonaro','maduro','ortega nicaragua','latin america us',
+    'amazon deforestation','latin america climate','latin america poverty'
+  ]},
+  'un-reform':       { title:'UN', keywords:[
+    'united nations','un security council','un reform','un veto',
+    'general assembly','un peacekeeping','un secretary general',
+    'guterres','un funding','us un','russia un','china un',
+    'un human rights','unhcr','unicef','wfp','who un',
+    'multilateralism','international order','un effectiveness',
+    'un paralysis','un charter','international law'
+  ]},
+  'icc-war-crimes':  { title:'War Crimes', keywords:[
+    'icc','international criminal court','war crimes','genocide',
+    'crimes against humanity','icc arrest warrant','icc ruling',
+    'icc netanyahu','icc putin','icc ukraine','icc gaza',
+    'international law violation','military tribunal','accountability',
+    'ethnic cleansing','mass atrocity','civilian targeting',
+    'cluster munitions','white phosphorus','chemical weapons',
+    'human rights violations','impunity','transitional justice'
+  ]},
+  'who-reform':      { title:'WHO', keywords:[
+    'world health organization','who reform','who pandemic treaty',
+    'global health','who funding','tedros','pandemic agreement',
+    'international health regulations','who sovereignty','who china',
+    'us who','who withdrawal','global health governance',
+    'vaccine equity','global health security','who budget'
+  ]}
+};
+ helloman-service/index.js
+// Self-contained background service for Helloman.ai
+// Runs on Railway — no time limits, no manual intervention
+// Schedule: articles every 4 hours, room synthesis daily at 6am UTC
+
+const cron = require('node-cron');
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const ANTHROPIC_KEY = process.env.ANTHROPIC_KEY;
+
+// ── ROOMS ─────────────────────────────────────────────────────────────
+const ROOMS = {
   'iran-war-2026':   { title:'War on Iran',            keywords:['iran','iranian','tehran','khamenei','irgc','natanz','fordow','hormuz','persian gulf','iran war','iran strike'] },
   'isr-pal':         { title:'War in Gaza',            keywords:['gaza','hamas','israel','israeli','palestinian','west bank','idf','rafah','netanyahu','ceasefire','occupied'] },
   'ukraine-russia':  { title:'Ukraine War',            keywords:['ukraine','ukrainian','russia','russian','zelensky','putin','kyiv','nato ukraine','crimea','donbas'] },
