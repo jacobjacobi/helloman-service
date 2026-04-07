@@ -501,16 +501,6 @@ async function runPipeline() {
       if (Array.isArray(existing) && existing.length > 0) continue;
 
       totalNew++;
-      const c = await classifyWithClaude(item.title, item.description, feed.name, roomId, fullText);
-      if (!c) continue;
-      totalClassified++;
-
-      // Get rank
-      const roomArts = await sbFetch('articles', 'room_id=eq.' + roomId + '&select=ai_score');
-      let rank = 1;
-      if (Array.isArray(roomArts)) {
-        for (const a of roomArts) { if ((a.ai_score||0) >= c.ai_score) rank++; }
-      }
 
       // Fetch full text via Jina.ai (free, no key needed)
       let fullText = null;
@@ -524,6 +514,17 @@ async function runPipeline() {
           fullText = raw.slice(0, 4000).trim() || null;
         }
       } catch(e) { /* silent fail */ }
+
+      const c = await classifyWithClaude(item.title, item.description, feed.name, roomId, fullText);
+      if (!c) continue;
+      totalClassified++;
+
+      // Get rank
+      const roomArts = await sbFetch('articles', 'room_id=eq.' + roomId + '&select=ai_score');
+      let rank = 1;
+      if (Array.isArray(roomArts)) {
+        for (const a of roomArts) { if ((a.ai_score||0) >= c.ai_score) rank++; }
+      }
 
       const artId = 'rss-' + Buffer.from(item.url).toString('base64').replace(/[^a-zA-Z0-9]/g,'').slice(0,20);
       const status = await sbUpsert('articles', {
