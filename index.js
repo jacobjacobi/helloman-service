@@ -300,7 +300,7 @@ async function sbUpsert(table, data) {
 async function fetchRSS(url) {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'Helloman.ai/1.0' },
+      headers: { 'User-Agent': 'ARGUS/1.0' },
       signal: AbortSignal.timeout(10000)
     });
     const xml = await res.text();
@@ -337,9 +337,10 @@ function assignRoom(title, description) {
 }
 
 // ── CLAUDE CLASSIFIER ─────────────────────────────────────────────────
-async function classifyWithClaude(title, desc, source, roomId) {
+async function classifyWithClaude(title, desc, source, roomId, fullText) {
   const room = ROOMS[roomId];
-  const prompt = 'Classify this news article for Helloman.ai.\n\nROOM: ' + room.title + '\n\nARTICLE:\nTitle: ' + title + '\nSource: ' + source + '\nDescription: ' + desc + '\n\nReturn ONLY valid JSON:\n{"narrative":"analytical|humanitarian|security|policy|legal|diplomatic|investigative|economic|geopolitical|political|ideological|factual","stance":"brief position","summary":"2-3 concrete sentences","assessment":"2-3 sentences honest quality evaluation","rank_reason":"one sentence","penalties":[],"dim_reasoning":5.0,"dim_evidence":5.0,"dim_originality":5.0,"dim_nuance":5.0,"dim_clarity":5.0,"dim_fairness":5.0,"dim_depth":5.0,"ai_score":5.0,"ai_confidence":70}\n\nSCORING: All dims 0-10. ai_score = weighted avg. Most articles 4-7. Reserve 8+ for exceptional thinking.';
+  const textForAnalysis = fullText ? fullText.slice(0, 2000) : desc;
+  const prompt = 'You are the classification engine of ARGUS — a worldview-mapping intelligence system. Be direct. State what the article actually argues.\n\nROOM: ' + room.title + '\n\nARTICLE:\nTitle: ' + title + '\nSource: ' + source + '\nContent: ' + textForAnalysis + '\n\nReturn ONLY valid JSON:\n{"narrative":"analytical|humanitarian|security|policy|legal|diplomatic|investigative|economic|geopolitical|political|ideological|factual","stance":"brief position","summary":"2-3 concrete sentences","assessment":"2-3 sentences honest quality evaluation","rank_reason":"one sentence","penalties":[],"dim_reasoning":5.0,"dim_evidence":5.0,"dim_originality":5.0,"dim_nuance":5.0,"dim_clarity":5.0,"dim_fairness":5.0,"dim_depth":5.0,"ai_score":5.0,"ai_confidence":70}\n\nSCORING: All dims 0-10. ai_score = weighted avg. Most articles 4-7. Reserve 8+ for exceptional thinking.';
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -360,14 +361,7 @@ async function generateRoomArticle(roomId, roomTitle, articles) {
     ' (AI: ' + (a.ai_score||0) + '/10, Perspective: ' + (a.narrative||'unknown') + ')\n   ' + (a.summary||'')
   ).join('\n\n');
 
-  const prompt = 'You are the editorial voice of Helloman.ai — a platform that reveals how the same reality is interpreted differently.\n\nWrite a ROOM SYNTHESIS for: ' + roomTitle + '\n\nThis is NOT a news summary. Map how perspectives diverge. Name sources. Show clashes. Point out what nobody covers. Be intellectually courageous.\n\nARTICLES:\n' + artList + '\n\nReturn ONLY valid JSON:\n{"headline":"Sharp synthesis headline capturing core tension","standfirst":"2-3 sentences. Most important thing to understand about coverage. Concrete.","body":"6-8 paragraphs. Name sources. Show agreement and clash. Include what highest-scoring argue, what lowest-scoring argue, what is entirely missing, and one philosophical zoom-out.","key_tensions":["specific tension between named sources","tension 2","tension 3"],"missing_voice":"Single most important perspective not represented"}';
-
-  try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] })
-    });
+  const prompt = 'You are the editorial intelligence of ARGUS — a system that maps how reality fractures across worldviews.\n\nYour job is not to summarize. It is to expose the structure beneath the coverage.\n\nTone rules (non-negotiable):\n- Intellectually sharp. Uncomfortably direct.\n- No softening. No hedging. No diplomatic phrasing.\n- State the insight most analysts avoid saying.\n- Compress aggressively. Every word must earn its place.\n- Pattern: Observation → Interpretation → Uncomfortable truth.\n\nWhat you must answer:\n1. What is actually happening — stripped of narrative packaging\n2. Which worldviews are in conflict and why\n3. What each perspective gets right and what it refuses to see\n4. Where the most significant disagreement lies\n5. What is not being covered that should be\n6. The structural truth beneath the surface events\n\nARTICLES:\n' + artList + '\n\nReturn ONLY valid JSON — no markdown, no backticks:\n{"headline":"One sharp declarative statement. The truth of this room right now. No softening.","standfirst":"2 sentences maximum. The core conflict and why it matters. Direct. No filler.","body":"6-8 paragraphs. Name sources explicitly. Show where they clash. State what the highest-scoring perspectives understand that others miss. State what everyone is avoiding. End with the structural truth — the deeper dynamic beneath the events. Write as if the reader deserves to know exactly what is happening and why.","narrative_split":"One sentence per perspective cluster. What each worldview emphasizes and what it cannot see.","missing":"One paragraph. What angle is entirely absent from this coverage and why that absence is itself revealing."}');
     const data = await r.json();
     if (data.error) return null;
     return JSON.parse((data.content?.[0]?.text || '').replace(/```json|```/g,'').trim());
@@ -491,7 +485,7 @@ async function runPipeline() {
       if (Array.isArray(existing) && existing.length > 0) continue;
 
       totalNew++;
-      const c = await classifyWithClaude(item.title, item.description, feed.name, roomId);
+      const c = await classifyWithClaude(item.title, item.description, feed.name, roomId, fullText);
       if (!c) continue;
       totalClassified++;
 
@@ -501,6 +495,19 @@ async function runPipeline() {
       if (Array.isArray(roomArts)) {
         for (const a of roomArts) { if ((a.ai_score||0) >= c.ai_score) rank++; }
       }
+
+      // Fetch full text via Jina.ai (free, no key needed)
+      let fullText = null;
+      try {
+        const jinaRes = await fetch('https://r.jina.ai/' + item.url, {
+          headers:{'Accept':'text/plain','X-Return-Format':'text','X-Timeout':'6'},
+          signal: AbortSignal.timeout(7000)
+        });
+        if (jinaRes.ok) {
+          const raw = await jinaRes.text();
+          fullText = raw.slice(0, 4000).trim() || null;
+        }
+      } catch(e) { /* silent fail */ }
 
       const artId = 'rss-' + Buffer.from(item.url).toString('base64').replace(/[^a-zA-Z0-9]/g,'').slice(0,20);
       const status = await sbUpsert('articles', {
@@ -513,6 +520,7 @@ async function runPipeline() {
         dim_originality: c.dim_originality, dim_nuance: c.dim_nuance,
         dim_clarity: c.dim_clarity, dim_fairness: c.dim_fairness, dim_depth: c.dim_depth,
         penalties: c.penalties || [], summary: c.summary, assessment: c.assessment,
+        full_text: fullText || null,
         gap: null, gap_value: 0, is_scored: true, is_community: false
       });
 
@@ -571,7 +579,7 @@ async function runRoomArticles() {
 }
 
 // ── SCHEDULER ────────────────────────────────────────────────────────
-console.log('🌍 Helloman.ai service starting...');
+console.log('🌍 ARGUS service starting...');
 console.log('📡 Pipeline: every 4 hours');
 console.log('📝 Room articles: daily at 6am UTC');
 const FAL_KEY = process.env.FAL_KEY;
